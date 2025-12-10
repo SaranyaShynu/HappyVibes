@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const OpenAI = require("openai");
+const axios = require("axios");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -14,6 +15,8 @@ const client = new OpenAI({
   baseURL: "https://router.huggingface.co/v1",
   apiKey: process.env.HF_TOKEN,
 });
+
+const ZAPIER_HOOK_URL = process.env.ZAPIER_WEBHOOK_URL;
 
 app.get("/", (req, res) => {
   res.render("index", { quote: null });
@@ -34,6 +37,14 @@ app.post("/generate", async (req, res) => {
     });
 
     const quote = chatCompletion.choices[0].message.content.trim();
+
+ //  Send quote to Zapier so Google Sheet gets a row
+    await axios.post(ZAPIER_HOOK_URL, {
+      quote,
+      author: "Motiva",
+      timestamp: new Date().toISOString(),
+    });
+
     res.render("index", { quote });
   } catch (error) {
     console.error(error.response?.data || error.message);
