@@ -19,7 +19,9 @@ const client = new OpenAI({
 const ZAPIER_HOOK_URL = process.env.ZAPIER_WEBHOOK_URL;
 
 app.get("/", (req, res) => {
-  res.render("index", { quote: null });
+  res.render("index", { quote: null,
+     landbotUrl: process.env.LANDBOT_CONFIG_URL
+   });
 });
 
 app.post("/generate", async (req, res) => {

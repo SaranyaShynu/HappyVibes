@@ -18,7 +18,6 @@
     #myLandbot {
       width: 350px;
       height: 500px;
-      margin: auto;
       border-radius: 22px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -31,8 +30,8 @@
     }
   </style>
 </head>
-
 <body>
+
   <!-- Landbot Chat Container -->
   <div id="myLandbot"></div>
 
@@ -40,8 +39,10 @@
   <script type="module">
     var myLandbot = new Landbot.Container({
       container: '#myLandbot',
-      configUrl: '<%= process.env.LANDBOT_CONFIG_URL %>',
+      // ✅ Replace this URL with your actual published Landbot config URL
+      configUrl: '<%= landbotUrl %>'
     });
   </script>
+
 </body>
 </html>
