@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Happy Vibes ✨</title>
-
   <style>
     body {
       margin: 0;
@@ -16,113 +15,32 @@
       align-items: center;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px);
-      padding: 40px;
-      width: 420px;
+    #myLandbot {
+      width: 350px;
+      height: 500px;
+      margin: auto;
       border-radius: 22px;
-      text-align: center;
+      overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       animation: fadeIn 0.7s ease-in-out;
     }
 
-    h2 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #4c4c4c;
-      margin-bottom: 20px;
-    }
-
-    .quote-box {
-      font-size: 20px;
-      margin: 25px 0;
-      color: #1c1c1c;
-      font-style: italic;
-      min-height: 70px;
-      opacity: 0;
-      animation: fadeQuote 0.8s forwards;
-    }
-
-    @keyframes fadeQuote {
-      to { opacity: 1; }
-    }
-
-    button {
-      background: #ff7eb3;
-      color: white;
-      font-size: 17px;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 22px;
-      cursor: pointer;
-      transition: 0.3s ease-in-out;
-    }
-
-    button:hover:not(.loading) {
-      background: #ff4da6;
-      transform: translateY(-2px);
-    }
-
-    button.loading {
-      background: #aaa;
-      cursor: not-allowed;
-    }
-
-    .spinner {
-      border: 3px solid #fff;
-      border-top: 3px solid transparent;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: inline-block;
-      animation: spin 0.7s linear infinite;
-      margin-left: 8px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .footer {
-      margin-top: 20px;
-      font-size: 14px;
-      opacity: 0.7;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 
 <body>
-  <div class="card">
-    <h2>🌞 Happy Vibes</h2>
+  <!-- Landbot Chat Container -->
+  <div id="myLandbot"></div>
 
-    <div class="quote-box" id="quoteBox">
-      <% if(quote) { %>
-        "<%= quote %>"
-      <% } else { %>
-        Click below for positivity ✨
-      <% } %>
-    </div>
-
-    <form id="quoteForm" action="/generate" method="POST">
-      <button type="submit" id="generateBtn">✨ Generate Quote</button>
-    </form>
-
-    <div class="footer">
-      Made with 💛 to brighten your day
-    </div>
-  </div>
-
-  <script>
-    const form = document.getElementById("quoteForm");
-    const btn = document.getElementById("generateBtn");
-    const quoteBox = document.getElementById("quoteBox");
-
-    form.addEventListener("submit", () => {
-      btn.classList.add("loading");
-      btn.disabled = true;
-      btn.innerHTML = `Generating positivity <span class="spinner"></span>`;
-      quoteBox.style.opacity = "0.3";
+  <script type="module" src="https://cdn.landbot.io/landbot-3/landbot-3.0.0.mjs"></script>
+  <script type="module">
+    var myLandbot = new Landbot.Container({
+      container: '#myLandbot',
+      configUrl: '<%= process.env.LANDBOT_CONFIG_URL %>',
     });
   </script>
 </body>
