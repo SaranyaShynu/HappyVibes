@@ -18,39 +18,52 @@ const client = new OpenAI({
 
 const ZAPIER_HOOK_URL = process.env.ZAPIER_WEBHOOK_URL;
 
+// Render main page
 app.get("/", (req, res) => {
-  res.render("index", { quote: null,
-     landbotUrl: process.env.LANDBOT_CONFIG_URL
-   });
+  res.render("index");
 });
 
-app.post("/generate", async (req, res) => {
+// API route for chat
+app.post("/api/quote", async (req, res) => {
   try {
-    const chatCompletion = await client.chat.completions.create({
-      model: "openai/gpt-oss-20b:groq",
-      messages: [
-        {
-          role: "user",
-          content: "Generate a short motivational quote.",
-        },
-      ],
-      temperature: 0.8,
-      max_tokens: 60,
-    });
+    const userMessage = req.body.message?.trim() || "";
 
-    const quote = chatCompletion.choices[0].message.content.trim();
+    // ✅ Conditional logic: only generate quote if user asks
+    if (/quote|motivational|inspire|positivity/i.test(userMessage)) {
+      const chatCompletion = await client.chat.completions.create({
+        model: "openai/gpt-oss-20b:groq",
+        messages: [
+          { role: "user", content: "Generate a short motivational quote." }
+        ],
+        temperature: 0.8,
+        max_tokens: 80,
+      });
 
- //  Send quote to Zapier so Google Sheet gets a row
-    await axios.post(ZAPIER_HOOK_URL, {
-      quote,
-      author: "Motiva",
-      timestamp: new Date().toISOString(),
-    });
+      const quote =
+        chatCompletion.choices?.[0]?.message?.content?.trim() ||
+        "✨ Keep going. Every step forward matters.";
 
-    res.render("index", { quote });
+      // send to Zapier
+      if (ZAPIER_HOOK_URL) {
+        try {
+          await axios.post(ZAPIER_HOOK_URL, {
+            quote,
+            author: "Motiva",
+            timestamp: new Date().toISOString(),
+          });
+        } catch (zapError) {
+          console.error("Zapier hook error:", zapError.message);
+        }
+      }
+
+      return res.json({ quote });
+    }
+
+    // Default response for other messages
+    res.json({ quote: "💬 I can share a motivational quote if you ask me!" });
   } catch (error) {
-    console.error(error.response?.data || error.message);
-    res.render("index", { quote: "Error: Could not generate quote." });
+    console.error(error.message);
+    res.status(500).json({ error: "Failed to generate quote" });
   }
 });
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Happy Vibes ✨</title>
   <style>
     body {
@@ -15,32 +15,91 @@
       align-items: center;
     }
 
-    #myLandbot {
-      width: 350px;
-      height: 500px;
+    .card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      width: 420px;
       border-radius: 22px;
-      overflow: hidden;
+      text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      animation: fadeIn 0.7s ease-in-out;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .chat-box {
+      margin: 20px 0;
+      min-height: 80px;
+      font-size: 18px;
+      color: #1c1c1c;
+      font-style: italic;
     }
+
+    input {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #ff7eb3;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease-in-out;
+    }
+
+    button:hover { background: #ff4da6; }
+
+    .footer { margin-top: 15px; font-size: 14px; opacity: 0.7; }
   </style>
 </head>
 <body>
 
-  <!-- Landbot Chat Container -->
-  <div id="myLandbot"></div>
+  <div class="card">
+    <h2>🌞 Happy Vibes</h2>
 
-  <script type="module" src="https://cdn.landbot.io/landbot-3/landbot-3.0.0.mjs"></script>
-  <script type="module">
-    var myLandbot = new Landbot.Container({
-      container: '#myLandbot',
-      // ✅ Replace this URL with your actual published Landbot config URL
-      configUrl: '<%= landbotUrl %>'
+    <div class="chat-box" id="chatBox">
+      Type something and press send...
+    </div>
+
+    <div>
+      <input type="text" id="userInput" placeholder="Say something..." />
+      <button id="sendBtn">Send</button>
+    </div>
+
+    <div class="footer">
+      Made with 💛 to brighten your day
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const input = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    sendBtn.addEventListener("click", async () => {
+      const message = input.value.trim();
+      if (!message) return;
+
+      chatBox.textContent = "💬 Thinking...";
+      input.value = "";
+
+      try {
+        const res = await fetch("/api/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        chatBox.textContent = data.quote;
+      } catch (err) {
+        chatBox.textContent = "❌ Error generating quote.";
+        console.error(err);
+      }
     });
   </script>
 
